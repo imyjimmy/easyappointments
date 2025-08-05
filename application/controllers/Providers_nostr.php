@@ -7,6 +7,7 @@ class Providers_nostr extends CI_Controller {
         $this->load->library('session');
         $this->load->model('providers_model');
         $this->load->model('users_model');
+        $this->migration->latest();
     }
     
     public function nostr_login() {
