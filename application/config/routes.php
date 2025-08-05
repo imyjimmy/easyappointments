@@ -158,6 +158,7 @@ $route['api/v1/availabilities']['get'] = 'api/v1/availabilities_api_v1/get';
 | that are later mapped to the available controllers in the filesystem. 
 |
 */
+$route['providers/nostr_login'] = 'providers_nostr/nostr_login';
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */
