@@ -982,4 +982,37 @@ class Providers_model extends EA_Model
 
         return in_array($service_id, $provider['services']);
     }
+
+    /**
+     * Get a provider by their Nostr public key.
+     *
+     * @param string $nostr_pubkey The Nostr public key.
+     *
+     * @return array|null Returns the provider data or null if not found.
+     */
+    public function get_provider_by_nostr_pubkey(string $nostr_pubkey): ?array
+    {
+        $role_id = $this->get_provider_role_id();
+
+        $provider = $this->db
+            ->select('users.*')
+            ->from('users')
+            // ->where('id_roles', $role_id)
+            ->where('nostr_pubkey', $nostr_pubkey)  // Assuming you have this column
+            ->get()
+            ->row_array();
+
+        if (!$provider) {
+            log_message('info', 'PROVIDER IS NULL!!!');
+            return null;
+        }
+
+        $first_name = $provider['first_name'];
+        log_message('info', 'PROVIDER IS NOT NULL!!!' . $first_name);
+        $this->cast($provider);
+        $provider['settings'] = $this->get_settings($provider['id']);
+        $provider['services'] = $this->get_service_ids($provider['id']);
+
+        return $provider;
+    }
 }

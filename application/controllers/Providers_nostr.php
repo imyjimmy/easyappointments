@@ -12,25 +12,12 @@ class Providers_nostr extends CI_Controller {
     }
     
     private function get_mgit_server_url() {
-        // Check if we're in development environment
-        // In development, we can reach localhost, in production we use container names
-        if ($this->is_development_environment()) {
-            return 'http://localhost:3003';
+        $php_env = $_ENV['PHP_ENV'] ?? $_SERVER['PHP_ENV'] ?? 'production';
+        
+        if ($php_env === 'development' || $php_env === 'local') {
+            return 'http://mgit-repo-server_web_1:3003';
         }
         return 'http://mgitreposerver-mgit-repo-server_web_1:3003';
-    }
-
-    private function is_development_environment() {
-        // Simple check: if we can reach localhost:3003, we're in development
-        $context = stream_context_create([
-            'http' => [
-                'timeout' => 1,
-                'method' => 'GET'
-            ]
-        ]);
-        
-        $result = @file_get_contents('http://localhost:3003/api/health', false, $context);
-        return $result !== false;
     }
 
     public function nostr_login() {
@@ -41,15 +28,13 @@ class Providers_nostr extends CI_Controller {
             return;
         }
         
-        // Validate token with mgit-repo-server
-        $validation = $this->validate_nostr_token($token);
+        // Validate token and get provider directly
+        $provider = $this->validate_nostr_token($token);
         
-        if (!$validation || !$validation['success']) {
+        if (!$provider) {
             show_error('Login token expired or invalid', 401);
             return;
         }
-        
-        $provider = $validation['provider'];
         
         // Create EasyAppointments session
         $this->session->set_userdata([
@@ -63,28 +48,84 @@ class Providers_nostr extends CI_Controller {
         // Redirect to provider dashboard
         redirect('providers');
     }
-    
-    private function validate_nostr_token($token) {
-        $validation_url = $this->get_mgit_server_url() . '/api/appointments/validate-login-token';
-        log_message('info', 'heres the url: $validation_url');
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => $validation_url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => json_encode(['token' => $token]),
-            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-            CURLOPT_TIMEOUT => 10
-        ]);
+
+    public function direct_login() {
+        $jwt_token = $this->input->get('token');
         
-        $response = curl_exec($curl);
-        $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
-        
-        if ($http_code !== 200) {
-            return false;
+        if (empty($jwt_token)) {
+            show_error('Invalid login token', 400);
+            return;
         }
         
-        return json_decode($response, true);
+        // Validate JWT with mgit-repo-server
+        $provider = $this->validate_nostr_token($jwt_token);
+        
+        if (!$provider) {
+            show_error('Login token expired or invalid', 401);
+            return;
+        }
+        
+        // Create session and redirect
+        $this->session->set_userdata([
+            'user_id' => $provider['id'],
+            'user_email' => $provider['email'],
+            'role_slug' => 'admin',
+            'timezone' => 'UTC',
+            'language' => 'english'
+        ]);
+        
+        redirect(base_url('providers'));
+    }
+    
+    
+    private function validate_nostr_token($jwt_token) {
+        $validation_url = $this->get_mgit_server_url() . '/api/auth/validate';
+        $response = null;
+
+        try {
+            $client = new GuzzleHttp\Client();
+            $guzzle_response = $client->get($validation_url, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $jwt_token
+                ]
+            ]);
+            
+            // Convert Guzzle response to the format your existing code expects
+            $response = [
+                'status' => $guzzle_response->getStatusCode(),
+                'body' => $guzzle_response->getBody()->getContents()
+            ];
+            
+        } catch (GuzzleHttp\Exception\RequestException $e) {
+            // Handle HTTP errors - treat as failed request
+            log_message('error', 'HTTP request failed: ' . $e->getMessage());
+            $response = [
+                'status' => 0,  // or whatever indicates failure in your logic
+                'body' => null
+            ];
+        }
+
+        // Now $response is accessible here because it was declared outside the try block
+        if ($response['status'] !== 200) {
+            return null; // Return null on failure
+        }
+
+        $validation_data = json_decode($response['body'], true);
+        if ($validation_data['status'] !== 'valid') {
+            return null;
+        }
+
+        $pubkey = $validation_data['pubkey'];
+
+        log_message('info', 'validation_data["pubkey"]: ' . $pubkey);
+
+        // Now get the provider from EasyAppointments database
+        $this->load->model('providers_model');
+        $provider = $this->providers_model->get_provider_by_nostr_pubkey(
+            $validation_data['pubkey']
+        );
+
+        // log_message('info', 'Provider info fetched: ' . $provider);
+        return $provider; // Return provider directly (or null if not found)
     }
 }

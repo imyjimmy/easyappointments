@@ -90,9 +90,11 @@ class Providers extends EA_Controller
         session(['dest_url' => site_url('providers')]);
 
         $user_id = session('user_id');
+        log_message('info', 'Providers: session_user_id ' . $user_id);
 
         if (cannot('view', PRIV_USERS)) {
             if ($user_id) {
+                log_message('info', 'user is forbidden!!! ' . $user_id);
                 abort(403, 'Forbidden');
             }
 
