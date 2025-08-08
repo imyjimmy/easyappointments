@@ -48,6 +48,7 @@ const DB_SLUG_CUSTOMER = 'customer';
 const DB_SLUG_PROVIDER = 'provider';
 const DB_SLUG_ADMIN = 'admin';
 const DB_SLUG_SECRETARY = 'secretary';
+const DB_SLUG_ADMIN_PROVIDER = 'admin-provider';
 
 const FILTER_TYPE_ALL = 'all';
 const FILTER_TYPE_PROVIDER = 'provider';

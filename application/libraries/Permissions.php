@@ -64,6 +64,10 @@ class Permissions
             return true;
         }
 
+        if ($role_slug === DB_SLUG_ADMIN || $role_slug === DB_SLUG_ADMIN_PROVIDER || !$limit_customer_access) {
+            return true;
+        }
+
         if ($role_slug === DB_SLUG_PROVIDER) {
             return $this->CI->appointments_model
                 ->query()

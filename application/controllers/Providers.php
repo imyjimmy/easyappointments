@@ -69,6 +69,7 @@ class Providers extends EA_Controller
         parent::__construct();
 
         $this->load->model('providers_model');
+        $this->load->model('admin_providers_model');
         $this->load->model('services_model');
         $this->load->model('roles_model');
 
@@ -77,6 +78,75 @@ class Providers extends EA_Controller
         $this->load->library('webhooks_client');
 
         $this->optional_provider_setting_fields['working_plan'] = setting('company_working_plan');
+    }
+
+    /**
+     * Get all providers including admin-providers.
+     *
+     * @param array|string|null $where Where conditions.
+     * @param int|null $limit Record limit.
+     * @param int|null $offset Record offset.
+     * @param string|null $order_by Order by.
+     *
+     * @return array Returns merged array of providers and admin-providers.
+     */
+    private function get_all_providers(
+        array|string|null $where = null,
+        ?int $limit = null,
+        ?int $offset = null,
+        ?string $order_by = null
+    ): array {
+        // Get regular providers
+        $providers = $this->providers_model->get($where, $limit, $offset, $order_by);
+        
+        // Get admin-providers
+        $admin_providers = $this->admin_providers_model->get($where, $limit, $offset, $order_by);
+        
+        // Merge and sort by name
+        $all_providers = array_merge($providers, $admin_providers);
+        
+        // Sort by first name, then last name
+        usort($all_providers, function($a, $b) {
+            $name_a = $a['first_name'] . ' ' . $a['last_name'];
+            $name_b = $b['first_name'] . ' ' . $b['last_name'];
+            return strcasecmp($name_a, $name_b);
+        });
+        
+        return $all_providers;
+    }
+
+    /**
+     * Search all providers including admin-providers.
+     *
+     * @param string $keyword Search keyword.
+     * @param int|null $limit Record limit.
+     * @param int|null $offset Record offset.
+     * @param string|null $order_by Order by.
+     *
+     * @return array Returns merged search results.
+     */
+    private function search_all_providers(
+        string $keyword,
+        ?int $limit = null,
+        ?int $offset = null,
+        ?string $order_by = null
+    ): array {
+        // Search regular providers
+        $providers = $this->providers_model->search($keyword, $limit, $offset, $order_by);
+        
+        // Search admin-providers  
+        $admin_providers = $this->admin_providers_model->search($keyword, $limit, $offset, $order_by);
+        
+        // Merge and sort
+        $all_providers = array_merge($providers, $admin_providers);
+        
+        usort($all_providers, function($a, $b) {
+            $name_a = $a['first_name'] . ' ' . $a['last_name'];
+            $name_b = $b['first_name'] . ' ' . $b['last_name'];
+            return strcasecmp($name_a, $name_b);
+        });
+        
+        return $all_providers;
     }
 
     /**
@@ -155,7 +225,7 @@ class Providers extends EA_Controller
 
             $offset = (int) request('offset', '0');
 
-            $providers = $this->providers_model->search($keyword, $limit, $offset, $order_by);
+            $providers = $this->search_all_providers($keyword, $limit, $offset, $order_by);
 
             json_response($providers);
         } catch (Throwable $e) {

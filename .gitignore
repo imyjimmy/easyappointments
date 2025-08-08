@@ -1,6 +1,7 @@
 /*.zip
 /.idea/
 /.tmp-package/
+/application/config/var/www/html/storage/logs/*
 /build/
 /docs/apigen/html
 /docs/jsdoc/html

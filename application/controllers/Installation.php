@@ -27,7 +27,7 @@ class Installation extends EA_Controller
     {
         parent::__construct();
 
-        $this->load->model('admins_model');
+        $this->load->model('admin_providers_model');
         $this->load->model('settings_model');
         $this->load->model('services_model');
         $this->load->model('providers_model');
@@ -73,22 +73,15 @@ class Installation extends EA_Controller
             $admin['settings']['notifications'] = true;
             $admin['settings']['calendar_view'] = CALENDAR_VIEW_DEFAULT;
             unset($admin['username'], $admin['password']);
-            $admin['id'] = $this->admins_model->save($admin);
+            $admin['id'] = $this->admin_providers_model->save($admin);
 
             session([
                 'user_id' => $admin['id'],
                 'user_email' => $admin['email'],
-                'role_slug' => DB_SLUG_ADMIN,
+                'role_slug' => DB_SLUG_ADMIN_PROVIDER,
                 'language' => $admin['language'],
                 'timezone' => $admin['timezone'],
                 'username' => $admin['settings']['username'],
-            ]);
-
-            // Save company settings
-            setting([
-                'company_name' => $company['company_name'],
-                'company_email' => $company['company_email'],
-                'company_link' => $company['company_link'],
             ]);
 
             // Service
@@ -101,26 +94,36 @@ class Installation extends EA_Controller
                 'attendants_number' => '1',
             ]);
 
-            // Provider
-            $this->providers_model->save([
-                'first_name' => 'Jane',
-                'last_name' => 'Doe',
-                'email' => 'jane@example.org',
-                'phone_number' => '+1 (000) 000-0000',
-                'services' => [$service_id],
-                'language' => $admin['language'],
-                'timezone' => $admin['timezone'],
-                'settings' => [
-                    'username' => 'janedoe',
-                    'password' => random_string(),
-                    'working_plan' => setting('company_working_plan'),
-                    'notifications' => true,
-                    'google_sync' => false,
-                    'sync_past_days' => 30,
-                    'sync_future_days' => 90,
-                    'calendar_view' => CALENDAR_VIEW_DEFAULT,
-                ],
+            // use $service_id now that its been created
+            $admin['services'] = [$service_id];
+
+            // Save company settings
+            setting([
+                'company_name' => $company['company_name'],
+                'company_email' => $company['company_email'],
+                'company_link' => $company['company_link'],
             ]);
+
+            // Provider
+            // $this->providers_model->save([
+            //     'first_name' => 'Jane',
+            //     'last_name' => 'Doe',
+            //     'email' => 'jane@example.org',
+            //     'phone_number' => '+1 (000) 000-0000',
+            //     'services' => [$service_id],
+            //     'language' => $admin['language'],
+            //     'timezone' => $admin['timezone'],
+            //     'settings' => [
+            //         'username' => 'janedoe',
+            //         'password' => random_string(),
+            //         'working_plan' => setting('company_working_plan'),
+            //         'notifications' => true,
+            //         'google_sync' => false,
+            //         'sync_past_days' => 30,
+            //         'sync_future_days' => 90,
+            //         'calendar_view' => CALENDAR_VIEW_DEFAULT,
+            //     ],
+            // ]);
 
             // Customer
             $this->customers_model->save([
