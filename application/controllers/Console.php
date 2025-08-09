@@ -58,7 +58,7 @@ class Console extends EA_Controller
      */
     public function install(): void
     {
-        $this->instance->migrate('fresh');
+        $this->instance->migrate();
 
         $password = $this->instance->seed();
 
