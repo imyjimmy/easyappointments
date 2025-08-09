@@ -58,7 +58,17 @@ class Console extends EA_Controller
      */
     public function install(): void
     {
-        $this->instance->migrate();
+        // Execute the final database schema directly (no migrations)
+        $schema_sql = file_get_contents(APPPATH . '/../install_schema.sql');
+        
+        // Split by semicolon and execute each statement
+        $statements = array_filter(array_map('trim', explode(';', $schema_sql)));
+        
+        foreach ($statements as $statement) {
+            if (!empty($statement) && !preg_match('/^--/', $statement)) {
+                $this->db->query($statement);
+            }
+        }
 
         $password = $this->instance->seed();
 

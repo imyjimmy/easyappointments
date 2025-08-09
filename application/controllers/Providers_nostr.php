@@ -15,6 +15,7 @@ class Providers_nostr extends CI_Controller {
         $php_env = $_ENV['PHP_ENV'] ?? $_SERVER['PHP_ENV'] ?? 'production';
         
         if ($php_env === 'development' || $php_env === 'local') {
+            log_message('info', 'php detected as development!' . $php_env);
             return 'http://mgit-repo-server_web_1:3003';
         }
         return 'http://mgitreposerver-mgit-repo-server_web_1:3003';
