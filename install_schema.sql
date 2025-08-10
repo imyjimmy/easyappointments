@@ -82,9 +82,6 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `id_roles` (`id_roles`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `users` ADD UNIQUE KEY `unique_nostr_pubkey` (`nostr_pubkey`);
-CREATE INDEX `idx_nostr_pubkey` ON `users`(`nostr_pubkey`);
-
 -- =============================================
 -- Table: user_settings
 -- =============================================
@@ -94,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `user_settings` (
   `password` varchar(512) DEFAULT NULL,
   `salt` varchar(512) DEFAULT NULL,
   `working_plan` text,
-  `working_plan_exceptions` text DEFAULT '{}',
+  `working_plan_exceptions` text,
   `notifications` tinyint(4) DEFAULT NULL,
   `google_sync` tinyint(4) DEFAULT NULL,
   `google_token` text,
@@ -246,6 +243,9 @@ ALTER TABLE `services_providers`
 -- Users foreign keys
 ALTER TABLE `users`
   ADD CONSTRAINT `users_roles` FOREIGN KEY (`id_roles`) REFERENCES `roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `users` ADD UNIQUE KEY `unique_nostr_pubkey` (`nostr_pubkey`);
+CREATE INDEX `idx_nostr_pubkey` ON `users`(`nostr_pubkey`);
 
 -- User Settings foreign keys
 ALTER TABLE `user_settings`

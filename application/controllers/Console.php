@@ -56,27 +56,77 @@ class Console extends EA_Controller
      *
      * @throws Exception
      */
-    public function install(): void
-    {
-        // Execute the final database schema directly (no migrations)
-        $schema_sql = file_get_contents(APPPATH . '/../install_schema.sql');
-        
-        // Split by semicolon and execute each statement
-        $statements = array_filter(array_map('trim', explode(';', $schema_sql)));
-        
-        foreach ($statements as $statement) {
-            if (!empty($statement) && !preg_match('/^--/', $statement)) {
-                $this->db->query($statement);
-            }
-        }
-
-        $password = $this->instance->seed();
-
-        response(
-            PHP_EOL . '⇾ Installation completed, login with "administrator" / "' . $password . '".' . PHP_EOL . PHP_EOL,
-        );
+public function install(): void
+{
+    // Drop existing tables if they exist (for clean install)
+    $drop_statements = [
+        'SET FOREIGN_KEY_CHECKS = 0',
+        'DROP TABLE IF EXISTS `user_settings`',
+        'DROP TABLE IF EXISTS `secretaries_providers`', 
+        'DROP TABLE IF EXISTS `services_providers`',
+        'DROP TABLE IF EXISTS `appointments`',
+        'DROP TABLE IF EXISTS `users`',
+        'DROP TABLE IF EXISTS `services`',
+        'DROP TABLE IF EXISTS `service_categories`',
+        'DROP TABLE IF EXISTS `roles`',
+        'DROP TABLE IF EXISTS `settings`',
+        'DROP TABLE IF EXISTS `consents`',
+        'DROP TABLE IF EXISTS `webhooks`',
+        'DROP TABLE IF EXISTS `blocked_periods`',
+        'SET FOREIGN_KEY_CHECKS = 1'
+    ];
+    
+    echo "Dropping existing tables...\n";
+    foreach ($drop_statements as $statement) {
+        $this->db->query($statement);
     }
 
+    // Execute the final database schema directly (no migrations)
+    $schema_sql = file_get_contents(FCPATH . 'install_schema.sql');
+    
+    // Split by semicolon and execute each statement
+    $statements = array_filter(array_map('trim', explode(';', $schema_sql)));
+    // DEBUG: Print all statements
+    echo "=== DEBUGGING STATEMENTS ARRAY ===\n";
+    echo "Total statements: " . count($statements) . "\n\n";
+    
+    foreach ($statements as $index => $statement) {
+        echo "Statement " . ($index + 1) . ":\n";
+        echo "Length: " . strlen($statement) . " chars\n";
+        echo "First 100 chars: " . substr($statement, 0, 100) . "\n";
+        echo "Last 50 chars: " . substr($statement, -50) . "\n";
+        echo "Is comment? " . (preg_match('/^--/', $statement) ? 'YES' : 'NO') . "\n";
+        echo "Is empty? " . (empty($statement) ? 'YES' : 'NO') . "\n";
+        echo "---\n\n";
+    }
+    
+    echo "=== END DEBUG ===\n";
+
+    foreach ($statements as $index => $statement) {
+	$statement = trim($statement);
+        if (!empty($statement)) {
+            echo "Executing statement " . ($index + 1) . ": " . substr($statement, 0, 50) . "...\n";
+            try {
+                $this->db->query($statement);
+                echo "SUCCESS\n";
+	    } catch (Exception $e) {
+	        if (strpos($e->getMessage(), 'Duplicate foreign key constraint') !== false) {
+                    echo "SKIPPED (constraint already exists)\n";
+                } else {
+                    echo "FAILED: " . $e->getMessage() . "\n";
+                    echo "Full statement: " . $statement . "\n";
+		    throw $e;
+		}
+            }
+        }
+    }
+
+    $password = $this->instance->seed();
+
+    response(
+        PHP_EOL . '⇾ Installation completed, login with "administrator" / "' . $password . '".' . PHP_EOL . PHP_EOL,
+    );
+}
     /**
      * Migrate the database to the latest state.
      *
