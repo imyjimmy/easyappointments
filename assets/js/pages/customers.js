@@ -134,11 +134,6 @@ App.Pages.Customers = (function () {
                 notes: $notes.val(),
                 timezone: $timezone.val(),
                 language: $language.val() || 'english',
-                custom_field_1: $customField1.val(),
-                custom_field_2: $customField2.val(),
-                custom_field_3: $customField3.val(),
-                custom_field_4: $customField4.val(),
-                custom_field_5: $customField5.val(),
                 ldap_dn: $ldapDn.val(),
             };
 
@@ -291,11 +286,6 @@ App.Pages.Customers = (function () {
         $timezone.val(customer.timezone);
         $language.val(customer.language || 'english');
         $ldapDn.val(customer.ldap_dn);
-        $customField1.val(customer.custom_field_1);
-        $customField2.val(customer.custom_field_2);
-        $customField3.val(customer.custom_field_3);
-        $customField4.val(customer.custom_field_4);
-        $customField5.val(customer.custom_field_5);
 
         $customerAppointments.empty();
 

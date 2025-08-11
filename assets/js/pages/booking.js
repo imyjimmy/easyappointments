@@ -790,11 +790,6 @@ App.Pages.Booking = (function () {
             city: $city.val(),
             zip_code: $zipCode.val(),
             timezone: $selectTimezone.val(),
-            custom_field_1: $customField1.val(),
-            custom_field_2: $customField2.val(),
-            custom_field_3: $customField3.val(),
-            custom_field_4: $customField4.val(),
-            custom_field_5: $customField5.val(),
         };
 
         data.appointment = {
@@ -887,12 +882,6 @@ App.Pages.Booking = (function () {
             }
             const appointmentNotes = appointment.notes !== null ? appointment.notes : '';
             $notes.val(appointmentNotes);
-
-            $customField1.val(customer.custom_field_1);
-            $customField2.val(customer.custom_field_2);
-            $customField3.val(customer.custom_field_3);
-            $customField4.val(customer.custom_field_4);
-            $customField5.val(customer.custom_field_5);
 
             App.Pages.Booking.updateConfirmFrame();
 

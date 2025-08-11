@@ -33,11 +33,6 @@ class Customers extends EA_Controller
         'notes',
         'timezone',
         'language',
-        'custom_field_1',
-        'custom_field_2',
-        'custom_field_3',
-        'custom_field_4',
-        'custom_field_5',
         'ldap_dn',
     ];
 

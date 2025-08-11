@@ -121,11 +121,6 @@ App.Components.AppointmentsModal = (function () {
                 language: $language.val(),
                 timezone: $timezone.val(),
                 notes: $customerNotes.val(),
-                custom_field_1: $customField1.val(),
-                custom_field_2: $customField2.val(),
-                custom_field_3: $customField3.val(),
-                custom_field_4: $customField4.val(),
-                custom_field_5: $customField5.val(),
             };
 
             if ($customerId.val() !== '') {
@@ -265,11 +260,6 @@ App.Components.AppointmentsModal = (function () {
                 $language.val(customer.language);
                 $timezone.val(customer.timezone);
                 $customerNotes.val(customer.notes);
-                $customField1.val(customer.custom_field_1);
-                $customField2.val(customer.custom_field_2);
-                $customField3.val(customer.custom_field_3);
-                $customField4.val(customer.custom_field_4);
-                $customField5.val(customer.custom_field_5);
             }
 
             $selectCustomer.trigger('click'); // Hide the list.

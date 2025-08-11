@@ -16,7 +16,7 @@ class Migration_Add_custom_fields_columns_to_users_table extends EA_Migration
     /**
      * @var int
      */
-    private const FIELD_NUMBER = 5;
+    private const FIELD_NUMBER = 0; // entirely turn off custom fields--
 
     /**
      * Upgrade method.
