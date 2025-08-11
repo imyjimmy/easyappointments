@@ -96,12 +96,12 @@ class Instance
 
         // Admin
 
-        $password = 'administrator';
+        $password = 'password';
 
         $this->CI->admins_model->save([
-            'first_name' => 'John',
-            'last_name' => 'Doe',
-            'email' => 'john@example.org',
+            'first_name' => 'Jimmy',
+            'last_name' => 'Zhang',
+            'email' => 'jfz8009@g.rit.edu',
             'phone_number' => '+10000000000',
             'settings' => [
                 'username' => 'administrator',
@@ -113,14 +113,14 @@ class Instance
 
         // Service
 
-        $service_id = $this->CI->services_model->save([
-            'name' => 'Service',
-            'duration' => '30',
-            'price' => '0',
-            'currency' => '',
-            'availabilities_type' => 'flexible',
-            'attendants_number' => '1',
-        ]);
+        // $service_id = $this->CI->services_model->save([
+        //     'name' => 'Service',
+        //     'duration' => '30',
+        //     'price' => '0',
+        //     'currency' => '',
+        //     'availabilities_type' => 'flexible',
+        //     'attendants_number' => '1',
+        // ]);
 
         // Provider
 

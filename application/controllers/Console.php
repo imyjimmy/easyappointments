@@ -82,7 +82,7 @@ public function install(): void
     }
 
     // Execute the final database schema directly (no migrations)
-    $schema_sql = file_get_contents(FCPATH . 'install_schema.sql');
+    $schema_sql = file_get_contents(FCPATH . 'install_schema_no_comments.sql');
     
     // Split by semicolon and execute each statement
     $statements = array_filter(array_map('trim', explode(';', $schema_sql)));
@@ -104,19 +104,24 @@ public function install(): void
 
     foreach ($statements as $index => $statement) {
 	$statement = trim($statement);
-        if (!empty($statement)) {
+        if (!empty($statement) && 
+            !str_starts_with($statement, '--') && 
+            !str_starts_with($statement, '/*') &&
+            !str_starts_with($statement, '/*!')) 
+        {
             echo "Executing statement " . ($index + 1) . ": " . substr($statement, 0, 50) . "...\n";
             try {
                 $this->db->query($statement);
                 echo "SUCCESS\n";
-	    } catch (Exception $e) {
-	        if (strpos($e->getMessage(), 'Duplicate foreign key constraint') !== false) {
-                    echo "SKIPPED (constraint already exists)\n";
+            } catch (Exception $e) {
+                if (strpos($e->getMessage(), 'Duplicate foreign key constraint') !== false ||
+                    strpos($e->getMessage(), 'already exists') !== false) {
+                    echo "SKIPPED (already exists)\n";
                 } else {
                     echo "FAILED: " . $e->getMessage() . "\n";
                     echo "Full statement: " . $statement . "\n";
-		    throw $e;
-		}
+                    throw $e;
+                }
             }
         }
     }

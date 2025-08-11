@@ -12,10 +12,6 @@ SET FOREIGN_KEY_CHECKS = 0;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
--- --------------------------------------------------------
--- Table structure for table `appointments`
--- --------------------------------------------------------
-
 CREATE TABLE `appointments` (
   `id` int NOT NULL,
   `create_datetime` datetime DEFAULT NULL,
@@ -36,10 +32,6 @@ CREATE TABLE `appointments` (
   `id_caldav_calendar` text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
--- Table structure for table `blocked_periods`
--- --------------------------------------------------------
-
 CREATE TABLE `blocked_periods` (
   `id` int NOT NULL,
   `create_datetime` datetime DEFAULT NULL,
@@ -49,10 +41,6 @@ CREATE TABLE `blocked_periods` (
   `end_datetime` datetime DEFAULT NULL,
   `notes` text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
--- Table structure for table `consents`
--- --------------------------------------------------------
 
 CREATE TABLE `consents` (
   `id` int NOT NULL,
@@ -67,17 +55,9 @@ CREATE TABLE `consents` (
   `type` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
--- Table structure for table `migrations`
--- --------------------------------------------------------
-
-CREATE TABLE `migrations` (
+CREATE TABLE IF NOT EXISTS `migrations` (
   `version` bigint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
--- Table structure for table `roles`
--- --------------------------------------------------------
 
 CREATE TABLE `roles` (
   `id` int NOT NULL,
@@ -96,18 +76,10 @@ CREATE TABLE `roles` (
   `blocked_periods` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
--- Table structure for table `secretaries_providers`
--- --------------------------------------------------------
-
 CREATE TABLE `secretaries_providers` (
   `id_users_secretary` int NOT NULL,
   `id_users_provider` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
--- --------------------------------------------------------
--- Table structure for table `services`
--- --------------------------------------------------------
 
 CREATE TABLE `services` (
   `id` int NOT NULL,
@@ -126,18 +98,10 @@ CREATE TABLE `services` (
   `id_service_categories` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
--- Table structure for table `services_providers`
--- --------------------------------------------------------
-
 CREATE TABLE `services_providers` (
   `id_users` int NOT NULL,
   `id_services` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
--- Table structure for table `service_categories`
--- --------------------------------------------------------
 
 CREATE TABLE `service_categories` (
   `id` int NOT NULL,
@@ -147,10 +111,6 @@ CREATE TABLE `service_categories` (
   `description` text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
--- Table structure for table `settings`
--- --------------------------------------------------------
-
 CREATE TABLE `settings` (
   `id` int NOT NULL,
   `create_datetime` datetime DEFAULT NULL,
@@ -158,10 +118,6 @@ CREATE TABLE `settings` (
   `name` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `value` longtext COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
--- Table structure for table `users`
--- --------------------------------------------------------
 
 CREATE TABLE `users` (
   `id` int NOT NULL,
@@ -185,10 +141,6 @@ CREATE TABLE `users` (
   `nostr_pubkey` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
--- Table structure for table `user_settings`
--- --------------------------------------------------------
-
 CREATE TABLE `user_settings` (
   `id_users` int NOT NULL,
   `username` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -209,10 +161,6 @@ CREATE TABLE `user_settings` (
   `calendar_view` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT 'default'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
--- Table structure for table `webhooks`
--- --------------------------------------------------------
-
 CREATE TABLE `webhooks` (
   `id` int NOT NULL,
   `create_datetime` datetime DEFAULT NULL,
@@ -225,10 +173,6 @@ CREATE TABLE `webhooks` (
   `is_ssl_verified` tinyint NOT NULL DEFAULT '1',
   `notes` text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
--- Indexes for dumped tables
--- --------------------------------------------------------
 
 ALTER TABLE `appointments`
   ADD PRIMARY KEY (`id`),
@@ -275,10 +219,6 @@ ALTER TABLE `user_settings`
 ALTER TABLE `webhooks`
   ADD PRIMARY KEY (`id`);
 
--- --------------------------------------------------------
--- AUTO_INCREMENT for dumped tables
--- --------------------------------------------------------
-
 ALTER TABLE `appointments`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
@@ -306,10 +246,6 @@ ALTER TABLE `users`
 ALTER TABLE `webhooks`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
--- --------------------------------------------------------
--- Constraints for dumped tables
--- --------------------------------------------------------
-
 ALTER TABLE `appointments`
   ADD CONSTRAINT `appointments_services` FOREIGN KEY (`id_services`) REFERENCES `services` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `appointments_users_customer` FOREIGN KEY (`id_users_customer`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -332,11 +268,6 @@ ALTER TABLE `users`
 ALTER TABLE `user_settings`
   ADD CONSTRAINT `user_settings_users` FOREIGN KEY (`id_users`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
--- --------------------------------------------------------
--- Insert default data
--- --------------------------------------------------------
-
--- Insert default roles
 INSERT INTO `roles` (`id`, `create_datetime`, `update_datetime`, `name`, `slug`, `is_admin`, `appointments`, `customers`, `services`, `users`, `system_settings`, `user_settings`, `webhooks`, `blocked_periods`) VALUES
 (1, NULL, NULL, 'Administrator', 'admin', 1, 15, 15, 15, 15, 15, 15, 15, 15),
 (2, NULL, NULL, 'Provider', 'provider', 0, 15, 15, 0, 0, 0, 15, 0, 0),
@@ -344,10 +275,8 @@ INSERT INTO `roles` (`id`, `create_datetime`, `update_datetime`, `name`, `slug`,
 (4, NULL, NULL, 'Secretary', 'secretary', 0, 15, 15, 0, 0, 0, 15, 0, 0),
 (5, NULL, NULL, 'Admin Provider', 'admin-provider', 1, 15, 15, 15, 15, 15, 15, NULL, NULL);
 
--- Insert migration version
 INSERT INTO `migrations` (`version`) VALUES (62);
 
--- Insert all default settings from the actual EasyAppointments install
 INSERT INTO `settings` (`id`, `create_datetime`, `update_datetime`, `name`, `value`) VALUES
 (1, NULL, NULL, 'company_working_plan', '{\"monday\":{\"start\":\"09:00\",\"end\":\"18:00\",\"breaks\":[{\"start\":\"14:30\",\"end\":\"15:00\"}]},\"tuesday\":{\"start\":\"09:00\",\"end\":\"18:00\",\"breaks\":[{\"start\":\"14:30\",\"end\":\"15:00\"}]},\"wednesday\":{\"start\":\"09:00\",\"end\":\"18:00\",\"breaks\":[{\"start\":\"14:30\",\"end\":\"15:00\"}]},\"thursday\":{\"start\":\"09:00\",\"end\":\"18:00\",\"breaks\":[{\"start\":\"14:30\",\"end\":\"15:00\"}]},\"friday\":{\"start\":\"09:00\",\"end\":\"18:00\",\"breaks\":[{\"start\":\"14:30\",\"end\":\"15:00\"}]},\"saturday\":{\"start\":\"09:00\",\"end\":\"18:00\",\"breaks\":[{\"start\":\"14:30\",\"end\":\"15:00\"}]},\"sunday\":{\"start\":\"09:00\",\"end\":\"18:00\",\"breaks\":[{\"start\":\"14:30\",\"end\":\"15:00\"}]}}'),
 (2, NULL, NULL, 'book_advance_timeout', '30'),
@@ -384,7 +313,7 @@ INSERT INTO `settings` (`id`, `create_datetime`, `update_datetime`, `name`, `val
 (34, NULL, NULL, 'matomo_analytics_url', ''),
 (35, NULL, NULL, 'display_delete_personal_information', '0'),
 (36, NULL, NULL, 'disable_booking', '0'),
-(37, NULL, NULL, 'disable_booking_message', '<p style=\"text-align: center;\">Thanks for stopping by!</p><p style=\"text-align: center;\">We are not accepting new appointments at the moment, please check back again later.</p>'),
+(37, NULL, NULL, 'disable_booking_message', '<p style="text-align: center">Thanks for stopping by!</p><p style="text-align: center">We are not accepting new appointments at the moment, please check back again later.</p>'),
 (38, NULL, NULL, 'company_logo', ''),
 (39, NULL, NULL, 'company_color', '#ffffff'),
 (40, NULL, NULL, 'display_login_button', '1'),
