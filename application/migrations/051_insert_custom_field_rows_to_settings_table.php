@@ -16,7 +16,7 @@ class Migration_Insert_custom_field_rows_to_settings_table extends EA_Migration
     /**
      * @var int
      */
-    private const FIELD_NUMBER = 5;
+    private const FIELD_NUMBER = 0;
 
     private const SETTINGS = [
         'display' => '0',

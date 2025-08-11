@@ -111,7 +111,7 @@ class Instance
             ],
         ]);
 
-        // Service
+        // // Service
 
         // $service_id = $this->CI->services_model->save([
         //     'name' => 'Service',
@@ -122,35 +122,35 @@ class Instance
         //     'attendants_number' => '1',
         // ]);
 
-        // Provider
+        // // Provider
 
-        $this->CI->providers_model->save([
-            'first_name' => 'Jane',
-            'last_name' => 'Doe',
-            'email' => 'jane@example.org',
-            'phone_number' => '+10000000000',
-            'services' => [$service_id],
-            'settings' => [
-                'username' => 'janedoe',
-                'password' => random_string(),
-                'working_plan' => setting('company_working_plan'),
-                'working_plan_exceptions' => '{}',
-                'notifications' => true,
-                'google_sync' => false,
-                'sync_past_days' => 30,
-                'sync_future_days' => 90,
-                'calendar_view' => CALENDAR_VIEW_DEFAULT,
-            ],
-        ]);
+        // $this->CI->providers_model->save([
+        //     'first_name' => 'Jane',
+        //     'last_name' => 'Doe',
+        //     'email' => 'jane@example.org',
+        //     'phone_number' => '+10000000000',
+        //     'services' => [$service_id],
+        //     'settings' => [
+        //         'username' => 'janedoe',
+        //         'password' => random_string(),
+        //         'working_plan' => setting('company_working_plan'),
+        //         'working_plan_exceptions' => '{}',
+        //         'notifications' => true,
+        //         'google_sync' => false,
+        //         'sync_past_days' => 30,
+        //         'sync_future_days' => 90,
+        //         'calendar_view' => CALENDAR_VIEW_DEFAULT,
+        //     ],
+        // ]);
 
-        // Customer
+        // // Customer
 
-        $this->CI->customers_model->save([
-            'first_name' => 'James',
-            'last_name' => 'Doe',
-            'email' => 'james@example.org',
-            'phone_number' => '+10000000000',
-        ]);
+        // $this->CI->customers_model->save([
+        //     'first_name' => 'James',
+        //     'last_name' => 'Doe',
+        //     'email' => 'james@example.org',
+        //     'phone_number' => '+10000000000',
+        // ]);
 
         return $password;
     }
