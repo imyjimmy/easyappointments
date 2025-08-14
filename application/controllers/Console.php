@@ -90,15 +90,15 @@ public function install(): void
     echo "=== DEBUGGING STATEMENTS ARRAY ===\n";
     echo "Total statements: " . count($statements) . "\n\n";
     
-    foreach ($statements as $index => $statement) {
-        echo "Statement " . ($index + 1) . ":\n";
-        echo "Length: " . strlen($statement) . " chars\n";
-        echo "First 100 chars: " . substr($statement, 0, 100) . "\n";
-        echo "Last 50 chars: " . substr($statement, -50) . "\n";
-        echo "Is comment? " . (preg_match('/^--/', $statement) ? 'YES' : 'NO') . "\n";
-        echo "Is empty? " . (empty($statement) ? 'YES' : 'NO') . "\n";
-        echo "---\n\n";
-    }
+    // foreach ($statements as $index => $statement) {
+    //     echo "Statement " . ($index + 1) . ":\n";
+    //     echo "Length: " . strlen($statement) . " chars\n";
+    //     echo "First 100 chars: " . substr($statement, 0, 100) . "\n";
+    //     echo "Last 50 chars: " . substr($statement, -50) . "\n";
+    //     echo "Is comment? " . (preg_match('/^--/', $statement) ? 'YES' : 'NO') . "\n";
+    //     echo "Is empty? " . (empty($statement) ? 'YES' : 'NO') . "\n";
+    //     echo "---\n\n";
+    // }
     
     echo "=== END DEBUG ===\n";
 
